@@ -8,7 +8,8 @@ C# .NET Api boiler plate to kick off backend projects
 
 ## Requirements
 
-- .NET
+- Git
+- .NET 7 SDK
 
 ## Installation
 
@@ -26,6 +27,10 @@ rm -rf .git && git init
 
 ```bash
 git remote add origin {REMOTE_URL}
+```
+
+```bash
+dotnet build
 ```
 
 ## Settings
