@@ -1,7 +1,6 @@
 // Program.cs - Program
 
-using System.Net;
-using System.Net.Sockets;
+using dotnet_boiler_api.Models;
 
 // Create the builder
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+// Register Library Service to use it with Dependency Injection in Controllers
+// builder.Services.AddTransient<ILibraryService, LibraryService>();
+
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Options for appSettingd
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,23 +34,27 @@ var config = new ConfigurationBuilder()
         .Build();
 
 // Parse Configs
-var AppName = config.GetValue<string>("AppName");
-var Urls = config.GetValue<string>("Urls");
+AppSettings? appSettings = config.GetSection("AppSettings").Get<AppSettings>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Dev mode
+
     // Swagger
     app.UseSwagger();
     app.UseSwaggerUI();
 
     // Logging
-    logger?.LogInformation($"{AppName} Development server started on: {Urls}");
-    logger?.LogInformation($"Api Docs: {Urls}/swagger");
+    logger?.LogInformation($"{appSettings?.AppName} Development server started on: {appSettings?.Urls}");
+    logger?.LogInformation($"Api Docs: {appSettings?.Urls}/swagger");
 
     app.UseExceptionHandler("/error-local-development");
 
-} else {
+}
+// Production 
+else
+{
     app.UseExceptionHandler("/error");
 }
 
@@ -56,10 +66,3 @@ app.MapControllers();
 
 // Start the server
 app.Run();
-
-// public static string GetAddressIP()
-//     {
-//         return Dns.GetHostAddresses(Dns.GetHostName())
-//             .FirstOrDefault(ha => ha.AddressFamily == AddressFamily.InterNetwork)
-//             .ToString();
-//     }
