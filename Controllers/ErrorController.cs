@@ -7,11 +7,24 @@ namespace dotnet_boiler_api.Controllers;
 [Route("[controller]")]
 public class ErrorController : ControllerBase
 {
+
+    private readonly ILogger<ErrorController> _logger;
+
+    public ErrorController(ILogger<ErrorController> logger)
+    {
+        _logger = logger;
+    }
+
     [HttpGet]
     [Route("/error-local-development")]
     public IActionResult ErrorLocalDevelopment(
         [FromServices] IWebHostEnvironment webHostEnvironment)
     {
+
+        // logger
+        _logger.LogInformation("error thrown",
+            DateTime.UtcNow.ToLongTimeString());
+
         if (webHostEnvironment.EnvironmentName != "Development")
         {
             throw new InvalidOperationException(

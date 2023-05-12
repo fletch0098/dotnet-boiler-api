@@ -1,6 +1,7 @@
 // Program.cs - Program
 
 using dotnet_boiler_api.Models;
+using dotnet_boiler_api.Services;
 
 // Create the builder
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// Register Library Service to use it with Dependency Injection in Controllers
-// builder.Services.AddTransient<ILibraryService, LibraryService>();
+// Register Root Service to use it with Dependency Injection in Controllers
+builder.Services.AddSingleton<RootService>();
 
 // Add services to the container.
 builder.Services.AddControllers();

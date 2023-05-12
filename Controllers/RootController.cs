@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using dotnet_boiler_api.Models;
+using dotnet_boiler_api.Services;
 using Microsoft.Extensions.Options;
 
 namespace dotnet_boiler_api.Controllers;
@@ -9,12 +10,12 @@ namespace dotnet_boiler_api.Controllers;
 public class RootController : ControllerBase
 {
     private readonly ILogger<RootController> _logger;
-    private readonly AppSettings _appSettings;
+    private readonly RootService _rootService;
 
-    public RootController(ILogger<RootController> logger, IOptions<AppSettings> appSettings)
+    public RootController(ILogger<RootController> logger, IOptions<AppSettings> appSettings, RootService rootService)
     {
         _logger = logger;
-        _appSettings = appSettings.Value;
+        _rootService = rootService;
     }
 
     [HttpGet]
@@ -27,7 +28,7 @@ public class RootController : ControllerBase
             DateTime.UtcNow.ToLongTimeString());
 
         // Return 'OK' text
-        return "OK";
+        return _rootService.GetHealth();
     }
 
     [HttpGet]
@@ -39,16 +40,23 @@ public class RootController : ControllerBase
         _logger.LogInformation("App at {DT}",
             DateTime.UtcNow.ToLongTimeString());
 
-        // Get appSettings values
-        string? appName = _appSettings.AppName;
-        string? urls = _appSettings.Urls;
-        string version = "1.0.0";
-        string env = "Development";
-
-        AppInfoDTO appInfo = new AppInfoDTO(appName, version, env, DateTime.Now, urls);
-
         // Return AppInfo
-        return appInfo;
+        return _rootService.GetApp();
+    }
+
+        [HttpGet]
+    [Route("debug")]
+    public AppInfoDTO Debug()
+    {
+
+        // logger
+        _logger.LogInformation("Debug at {DT}",
+            DateTime.UtcNow.ToLongTimeString());
+
+             throw new Exception("Sample exception.");
+             
+        // Return AppInfo
+        return _rootService.GetApp();
     }
 
 }
